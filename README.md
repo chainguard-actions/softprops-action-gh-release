@@ -1,5 +1,7 @@
 # softprops/action-gh-release
 
+📦 :octocat: GitHub Action for creating GitHub Releases
+
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/softprops/action-gh-release](https://github.com/softprops/action-gh-release).
 
 ## Versions
