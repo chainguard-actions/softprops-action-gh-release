@@ -1,4 +1,6 @@
 {
-  "upstream": "softprops/action-gh-release",
-  "version": "v2.5.0"
+  "owner": "softprops",
+  "repo": "action-gh-release",
+  "version": "",
+  "url": "https://github.com/softprops/action-gh-release"
 }
