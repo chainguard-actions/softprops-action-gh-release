@@ -1,7 +1,0 @@
-{
-  "owner": "softprops",
-  "name": "action-gh-release",
-  "visibility": "internal",
-  "description": "📦 :octocat: GitHub Action for creating GitHub Releases",
-  "block_publish": false
-}
