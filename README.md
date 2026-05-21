@@ -8,7 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
-| v2.5.0 | [`v2.5.0`](https://github.com/chainguard-actions/action-gh-release/tree/v2.5.0) | — |
+| v2.5.0 | [`v2.5.0`](https://github.com/chainguard-actions/softprops--action-gh-release/tree/v2.5.0) | — |
 
 ## Privacy
 
