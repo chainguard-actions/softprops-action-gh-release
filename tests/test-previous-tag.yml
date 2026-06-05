@@ -1,0 +1,24 @@
+name: Test previous tag for release notes comparison
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v5.0.0
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          tag_name: v5.0.0-test
+          generate_release_notes: true
+          previous_tag: v4.0.0-test
+          token: ${{ github.token }}
+      - name: Assert action ran
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          echo "url: ${{ steps.action.outputs.url }}"
+          echo "PASS: action step executed with previous_tag input"

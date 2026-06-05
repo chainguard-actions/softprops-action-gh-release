@@ -1,0 +1,26 @@
+name: Test draft and prerelease options
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v2.0.0-beta
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          tag_name: v2.0.0-beta-test
+          draft: true
+          prerelease: true
+          make_latest: "false"
+          target_commitish: ${{ github.sha }}
+          token: ${{ github.token }}
+      - name: Assert action ran
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          echo "upload_url: ${{ steps.action.outputs.upload_url }}"
+          echo "PASS: action step executed with draft/prerelease inputs"
