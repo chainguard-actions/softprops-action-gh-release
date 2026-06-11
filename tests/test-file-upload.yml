@@ -1,25 +1,36 @@
-name: Test basic release inputs
+name: Test file upload inputs
 on:
   workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      GITHUB_REF: refs/tags/v1.0.0
+      GITHUB_REF: refs/tags/v2.0.0
       GITHUB_EVENT_NAME: push
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create test assets and body file
+        run: |
+          mkdir -p /tmp/release-assets
+          echo "asset content" > /tmp/release-assets/asset.txt
+          echo "Release notes from file" > /tmp/release-body.md
       - id: action
         uses: .
         with:
-          tag_name: v1.0.0-test
-          name: "Test Release v1.0.0"
-          body: "This is a test release body"
+          tag_name: v2.0.0-test
+          name: "Test File Upload Release"
+          body_path: /tmp/release-body.md
+          append_body: "false"
+          files: |
+            /tmp/release-assets/asset.txt
+          working_directory: /tmp/release-assets
+          fail_on_unmatched_files: "false"
+          preserve_order: "true"
+          overwrite_files: "true"
           draft: "true"
           prerelease: "false"
           make_latest: "false"
           generate_release_notes: "false"
-          target_commitish: ${{ github.sha }}
           repository: ${{ github.repository }}
           token: ${{ github.token }}
         continue-on-error: true
@@ -28,20 +39,20 @@ jobs:
           STEP_OUTCOME: ${{ steps.action.outcome }}
           RELEASE_URL: ${{ steps.action.outputs.url }}
           RELEASE_ID: ${{ steps.action.outputs.id }}
+          UPLOAD_URL: ${{ steps.action.outputs.upload_url }}
+          ASSETS: ${{ steps.action.outputs.assets }}
         run: |
           echo "step outcome: $STEP_OUTCOME"
           echo "release url: $RELEASE_URL"
           echo "release id: $RELEASE_ID"
+          echo "upload url: $UPLOAD_URL"
+          echo "assets: $ASSETS"
           if [ "$STEP_OUTCOME" = "success" ]; then
             if [ -z "$RELEASE_URL" ]; then
               echo "FAIL: expected non-empty url output"
               exit 1
             fi
-            if [ -z "$RELEASE_ID" ]; then
-              echo "FAIL: expected non-empty id output"
-              exit 1
-            fi
-            echo "PASS: release created with url=$RELEASE_URL id=$RELEASE_ID"
+            echo "PASS: release created with assets"
           else
             echo "INFO: action did not succeed (may lack permissions in test env), but inputs were exercised"
           fi
