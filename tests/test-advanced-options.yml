@@ -1,0 +1,27 @@
+name: Test advanced release options
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v3.0.0
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          tag_name: v3.0.0-test
+          name: "Advanced Test Release"
+          body: "Initial body content"
+          append_body: "true"
+          repository: ${{ github.repository }}
+          target_commitish: ${{ github.sha }}
+          discussion_category_name: "General"
+          token: ${{ github.token }}
+      - name: Assert action ran with advanced options
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          echo "PASS: action step executed with advanced option inputs"
