@@ -10,6 +10,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 |---------|-----|-----------------|
 | v2.5.0 | [`v2.5.0`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v2.5.0) | — |
 | v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.0) | [`b430933`](https://github.com/softprops/action-gh-release/commit/b4309332981a82ec1c5618f44dd2e27cc8bfbfda) |
+| v3.0.1 | [`v3.0.1`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.1) | [`718ea10`](https://github.com/softprops/action-gh-release/commit/718ea10b132b3b2eba29c1007bb80653f286566b) |
 
 ## Privacy
 
