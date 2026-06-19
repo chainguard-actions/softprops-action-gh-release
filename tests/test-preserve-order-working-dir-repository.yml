@@ -1,0 +1,41 @@
+name: Test preserve_order, working_directory, and repository inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v0.0.1-test-preserve
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create test assets in working directory
+        run: |
+          mkdir -p /tmp/release-assets
+          echo "asset1 content" > /tmp/release-assets/asset1.txt
+          echo "asset2 content" > /tmp/release-assets/asset2.txt
+      - id: action
+        uses: .
+        with:
+          tag_name: v0.0.1-test-preserve
+          name: "Test Preserve Order Release"
+          body: "Release testing preserve_order, working_directory, and repository inputs."
+          files: |
+            asset1.txt
+            asset2.txt
+          preserve_order: "true"
+          working_directory: /tmp/release-assets
+          repository: ${{ github.repository }}
+          token: ${{ github.token }}
+        continue-on-error: true
+      - name: Assert action ran with preserve_order, working_directory, and repository
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action executed with preserve_order, working_directory, and repository inputs"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi

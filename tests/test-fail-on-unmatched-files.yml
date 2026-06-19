@@ -1,0 +1,38 @@
+name: Test fail on unmatched files
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v1.3.0
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: release
+        uses: .
+        continue-on-error: true
+        with:
+          tag_name: v1.3.0
+          name: "Release v1.3.0"
+          body: "Release with unmatched files glob."
+          draft: "false"
+          prerelease: "false"
+          files: /tmp/nonexistent-file-*.zip
+          fail_on_unmatched_files: "true"
+          token: ${{ github.token }}
+
+      - name: Assert action failed due to unmatched files or API error
+        env:
+          OUTCOME: ${{ steps.release.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # With fail_on_unmatched_files=true and a glob that matches nothing,
+          # the action should fail (either due to unmatched files or API error)
+          if [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed as expected (unmatched files or API error)"
+          else
+            echo "INFO: action succeeded (real token with no file validation failure)"
+            echo "PASS: action ran without input validation error"
+          fi

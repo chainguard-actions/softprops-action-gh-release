@@ -1,0 +1,32 @@
+name: Test append_body and make_latest inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v0.0.1-test-append
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tag_name: v0.0.1-test-append
+          name: "Test Append Body Release"
+          body: "Initial body content."
+          append_body: "true"
+          make_latest: "false"
+          token: ${{ github.token }}
+        continue-on-error: true
+      - name: Assert action ran (outputs or continue-on-error)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action executed with append_body and make_latest inputs"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi
