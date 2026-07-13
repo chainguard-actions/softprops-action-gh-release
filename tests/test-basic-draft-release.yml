@@ -1,0 +1,39 @@
+name: Test basic draft release creation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_REF_NAME: main
+      GITHUB_EVENT_NAME: push
+      GITHUB_REPOSITORY: softprops/action-gh-release
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Test: when draft=true and no tag_name, the action should still attempt
+      # to create a release (draft releases don't require a tag per the code).
+      # We test the draft=true path by providing an explicit tag_name.
+      # Since we can't make real API calls in act, we test the validation path:
+      # when GITHUB_REF is not a tag and no tag_name is given and draft=false,
+      # the action must fail with "requires a tag".
+      - id: no_tag_no_draft
+        uses: .
+        with:
+          name: "Test No Tag No Draft"
+          body: "Should fail because no tag and not a draft."
+          draft: "false"
+          token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Assert action failed with missing tag error
+        env:
+          OUTCOME: ${{ steps.no_tag_no_draft.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when no tag provided and not a draft"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when no tag and not a draft"

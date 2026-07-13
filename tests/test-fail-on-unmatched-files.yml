@@ -1,0 +1,39 @@
+name: Test fail_on_unmatched_files causes failure when no files match
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v0.0.6-test
+      GITHUB_REF_NAME: v0.0.6-test
+      GITHUB_EVENT_NAME: push
+      GITHUB_REPOSITORY: softprops/action-gh-release
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Test: when fail_on_unmatched_files=true and the file pattern matches nothing,
+      # the action should fail BEFORE making any API call.
+      - id: release
+        uses: .
+        with:
+          tag_name: v0.0.6-test-unmatched
+          name: "Test Fail On Unmatched Files"
+          body: "Testing fail_on_unmatched_files with a non-existent file."
+          draft: "true"
+          prerelease: "false"
+          files: /tmp/this-file-does-not-exist-at-all-12345.txt
+          fail_on_unmatched_files: "true"
+          token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Assert action failed due to unmatched file pattern
+        env:
+          OUTCOME: ${{ steps.release.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when file pattern matches nothing and fail_on_unmatched_files=true"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when file pattern matched no files"

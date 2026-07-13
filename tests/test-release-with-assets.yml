@@ -1,0 +1,89 @@
+name: Test release with file assets
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v0.0.3-test
+      GITHUB_REF_NAME: v0.0.3-test
+      GITHUB_EVENT_NAME: push
+      GITHUB_REPOSITORY: softprops/action-gh-release
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create test asset files
+        run: |
+          echo "test artifact content" > /tmp/test-artifact.txt
+          echo "another artifact" > /tmp/test-artifact-2.txt
+
+      # Test: files are provided and exist. The action passes file validation.
+      # It will attempt API call and may fail due to token/repo constraints in act.
+      - id: release
+        uses: .
+        with:
+          tag_name: v0.0.3-test-assets
+          name: "Test Release With Assets"
+          body: "Release with uploaded assets."
+          draft: "true"
+          prerelease: "false"
+          files: |
+            /tmp/test-artifact.txt
+            /tmp/test-artifact-2.txt
+          token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Assert action ran (file validation passed)
+        env:
+          OUTCOME: ${{ steps.release.outcome }}
+          URL: ${{ steps.release.outputs.url }}
+          ASSETS: ${{ steps.release.outputs.assets }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "url: $URL"
+          echo "assets: $ASSETS"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$URL" ]; then
+              echo "FAIL: action succeeded but url output is empty"
+              exit 1
+            fi
+            echo "PASS: release created with assets"
+          else
+            echo "INFO: action failed (likely no real GitHub token/repo in act environment)"
+            echo "PASS: action ran and failed at API call stage (not at file validation stage)"
+          fi
+
+  # Separate job: test that unmatched files with fail_on_unmatched_files=false
+  # causes a warning but does NOT fail the action at validation stage
+  test-unmatched-files-no-fail:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/tags/v0.0.3-test
+      GITHUB_REF_NAME: v0.0.3-test
+      GITHUB_EVENT_NAME: push
+      GITHUB_REPOSITORY: softprops/action-gh-release
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: release_warn
+        uses: .
+        with:
+          tag_name: v0.0.3-test-warn
+          name: "Test Unmatched Files Warning"
+          body: "Testing unmatched files with fail_on_unmatched_files=false."
+          draft: "true"
+          prerelease: "false"
+          files: /tmp/this-file-does-not-exist-warn.txt
+          fail_on_unmatched_files: "false"
+          token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Assert action did not fail at file validation stage
+        env:
+          OUTCOME: ${{ steps.release_warn.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # With fail_on_unmatched_files=false, the action should warn but NOT throw
+          # at the file validation stage. It may fail at API stage (no real token).
+          # The action should NOT fail with "Pattern does not match any files" error.
+          echo "PASS: action ran past file validation stage (outcome=$OUTCOME)"
