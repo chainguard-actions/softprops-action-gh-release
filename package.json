@@ -1,0 +1,44 @@
+{
+  "name": "action-gh-release",
+  "version": "2.6.1",
+  "private": true,
+  "description": "GitHub Action for creating GitHub Releases",
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --platform=node --format=cjs --target=node20 --outfile=dist/index.js --minify",
+    "build-debug": "esbuild src/main.ts --bundle --platform=node --format=cjs --target=node20 --outfile=dist/index.js --sourcemap --keep-names",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest --coverage",
+    "fmt": "prettier --write \"src/**/*.ts\" \"__tests__/**/*.ts\"",
+    "fmtcheck": "prettier --check \"src/**/*.ts\" \"__tests__/**/*.ts\"",
+    "updatetag": "git tag -d v2 && git push origin :v2 && git tag -a v2 -m '' && git push origin v2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/softprops/action-gh-release.git"
+  },
+  "keywords": [
+    "actions"
+  ],
+  "author": "softprops",
+  "dependencies": {
+    "@actions/core": "^3.0.0",
+    "@actions/github": "^9.0.0",
+    "@octokit/plugin-retry": "^8.1.0",
+    "@octokit/plugin-throttling": "^11.0.3",
+    "glob": "^13.0.6",
+    "mime-types": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/glob": "^9.0.0",
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^20.19.37",
+    "@vitest/coverage-v8": "^4.1.0",
+    "esbuild": "^0.27.3",
+    "prettier": "3.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "typescript-formatter": "^7.2.2",
+    "vitest": "^4.0.4"
+  }
+}
