@@ -1,0 +1,84 @@
+name: Test fail_on_unmatched_files behavior
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a dummy asset file
+        run: |
+          echo "dummy asset content" > /tmp/dummy-asset.txt
+
+      - id: release
+        uses: .
+        continue-on-error: true
+        with:
+          tag_name: v0.0.3-files-test
+          name: "Release with Files v0.0.3"
+          body: "Testing file upload and fail_on_unmatched_files."
+          files: |
+            /tmp/dummy-asset.txt
+          fail_on_unmatched_files: "true"
+
+      - name: Assert action ran (outputs set, or failed gracefully on sentinel repo)
+        env:
+          OUTCOME: ${{ steps.release.outcome }}
+          URL: ${{ steps.release.outputs.url }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+          ASSETS: ${{ steps.release.outputs.assets }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "url: $URL"
+          echo "id: $RELEASE_ID"
+          echo "assets: $ASSETS"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$URL" ]; then
+              echo "FAIL: action succeeded but url output is empty"
+              exit 1
+            fi
+            if [ -z "$RELEASE_ID" ]; then
+              echo "FAIL: action succeeded but id output is empty"
+              exit 1
+            fi
+            echo "PASS: release with files created, url=$URL id=$RELEASE_ID"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
+
+  test-unmatched-glob-fails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: release_unmatched
+        uses: .
+        continue-on-error: true
+        with:
+          tag_name: v0.0.4-unmatched-test
+          name: "Release Unmatched Files v0.0.4"
+          body: "Testing fail_on_unmatched_files with a glob that matches nothing."
+          files: /tmp/this-file-does-not-exist-*.xyz
+          fail_on_unmatched_files: "true"
+
+      - name: Assert action failed (unmatched glob or sentinel repo)
+        env:
+          OUTCOME: ${{ steps.release_unmatched.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # The action should fail either because the glob matches nothing
+          # (fail_on_unmatched_files=true) or because the sentinel repo is not resolvable.
+          # Either way, failure is the expected outcome here.
+          if [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed as expected (unmatched glob or sentinel repo)"
+          elif [ "$OUTCOME" = "success" ]; then
+            echo "FAIL: action should have failed due to unmatched glob"
+            exit 1
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

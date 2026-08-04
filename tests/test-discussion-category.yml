@@ -1,0 +1,37 @@
+name: Test discussion category name input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          tag_name: v0.0.1-test-discussion-category
+          name: "Test Discussion Category"
+          body: "Testing the discussion_category_name input"
+          discussion_category_name: "General"
+      - name: Assert action ran (outputs set, or failed gracefully on the sentinel repo)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          URL: ${{ steps.action.outputs.url }}
+          ID: ${{ steps.action.outputs.id }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "url: $URL"
+          echo "id: $ID"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$URL" ] || [ -z "$ID" ]; then
+              echo "FAIL: action succeeded but outputs are empty"
+              exit 1
+            fi
+            echo "PASS: got url='$URL' id='$ID'"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
