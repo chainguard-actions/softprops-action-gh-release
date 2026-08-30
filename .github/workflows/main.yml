@@ -1,0 +1,76 @@
+name: main
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: ".tool-versions"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Build
+        run: npm run build
+      - name: Check dist freshness
+        id: dist_freshness
+        continue-on-error: true
+        run: |
+          git diff --exit-code --stat -- dist/index.js \
+          || (echo "##[error] found changed dist/index.js after build. please run 'npm run build' and commit the updated bundle" \
+              && exit 1)
+      - name: Comment on stale dist bundle
+        if: github.event_name == 'pull_request' && steps.dist_freshness.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          marker='<!-- dist-freshness-check -->'
+          diff_stat="$(git diff --stat -- dist/index.js)"
+          body=$(cat <<EOF
+          $marker
+          \`dist/index.js\` changed after \`npm run build\`.
+
+          Please run \`npm run build\` and commit the regenerated bundle.
+
+          \`\`\`text
+          $diff_stat
+          \`\`\`
+          EOF
+          )
+
+          existing_id="$(
+            gh api "repos/$GH_REPO/issues/$PR_NUMBER/comments" \
+              --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | contains("<!-- dist-freshness-check -->"))) | .id' \
+              | tail -n 1
+          )"
+
+          if [ -n "$existing_id" ]; then
+            gh api --method PATCH "repos/$GH_REPO/issues/comments/$existing_id" -f body="$body" >/dev/null
+          else
+            gh api --method POST "repos/$GH_REPO/issues/$PR_NUMBER/comments" -f body="$body" >/dev/null
+          fi
+      - name: Fail on stale dist bundle
+        if: steps.dist_freshness.outcome == 'failure'
+        run: |
+          echo "##[error] found changed dist/index.js after build. please run 'npm run build' and commit the updated bundle"
+          exit 1
+      - name: Test
+        run: npm run test
+      - name: Format
+        run: npm run fmtcheck
