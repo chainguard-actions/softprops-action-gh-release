@@ -15,6 +15,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.0) | [`b430933`](https://github.com/softprops/action-gh-release/commit/b4309332981a82ec1c5618f44dd2e27cc8bfbfda) |
 | v3.0.1 | [`v3.0.1`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.1) | [`718ea10`](https://github.com/softprops/action-gh-release/commit/718ea10b132b3b2eba29c1007bb80653f286566b) |
 | v3.0.2 | [`v3.0.2`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.2) | [`3d0d988`](https://github.com/softprops/action-gh-release/commit/3d0d9888cb7fd7b750713d6e236d1fcb99157228) |
+| v3.0.3 | [`v3.0.3`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.3) | [`efb3536`](https://github.com/softprops/action-gh-release/commit/efb35369e0ad2afab669f228072c1b0d510eae64) |
 
 ## Privacy
 
