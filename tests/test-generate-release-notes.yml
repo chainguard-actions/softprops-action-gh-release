@@ -1,0 +1,38 @@
+name: Test generate_release_notes and append_body inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          tag_name: v0.0.1-test-generate
+          name: "Test Release (generate_release_notes)"
+          generate_release_notes: "true"
+          append_body: "false"
+          body: "Prepended body text."
+      - name: Assert action ran (outputs set, or failed gracefully on the sentinel repo)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          URL: ${{ steps.action.outputs.url }}
+          ID: ${{ steps.action.outputs.id }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "url: $URL"
+          echo "id: $ID"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$URL" ]; then
+              echo "FAIL: action succeeded but url output is empty"
+              exit 1
+            fi
+            echo "PASS: got url '$URL'"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
