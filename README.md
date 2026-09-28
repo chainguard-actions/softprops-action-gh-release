@@ -8,6 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
+| v0.1.15 | [`v0.1.15`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v0.1.15) | [`de2c0eb`](https://github.com/softprops/action-gh-release/commit/de2c0eb89ae2a093876385947365aca7b0e5f844) |
 | v2.3.2 | [`v2.3.2`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v2.3.2) | [`72f2c25`](https://github.com/softprops/action-gh-release/commit/72f2c25fcb47643c292f7107632f7a47c1df5cd8) |
 | v2.4.1 | [`v2.4.1`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v2.4.1) | [`6da8fa9`](https://github.com/softprops/action-gh-release/commit/6da8fa9354ddfdc4aeace5fc48d7f679b5214090) |
 | v2.5.0 | [`v2.5.0`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v2.5.0) | [`a06a81a`](https://github.com/softprops/action-gh-release/commit/a06a81a03ee405af7f2048a818ed3f03bbf83c7b) |
