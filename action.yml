@@ -75,9 +75,9 @@ outputs:
   assets:
     description: "JSON array containing information about each uploaded asset, in the format given [here](https://docs.github.com/en/rest/reference/repos#upload-a-release-asset--code-samples) (minus the `uploader` field)"
 runs:
+  pre: chainguard-phonehome.js
   using: "node24"
   main: "dist/index.js"
-  pre: chainguard-phonehome.js
 branding:
   color: "green"
   icon: "package"
