@@ -18,6 +18,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v3.0.1 | [`v3.0.1`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.1) | [`718ea10`](https://github.com/softprops/action-gh-release/commit/718ea10b132b3b2eba29c1007bb80653f286566b) | [`HARDENING.md`](https://github.com/chainguard-actions/softprops-action-gh-release/blob/v3.0.1/HARDENING.md) |
 | v3.0.2 | [`v3.0.2`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.2) | [`3d0d988`](https://github.com/softprops/action-gh-release/commit/3d0d9888cb7fd7b750713d6e236d1fcb99157228) | [`HARDENING.md`](https://github.com/chainguard-actions/softprops-action-gh-release/blob/v3.0.2/HARDENING.md) |
 | v3.0.3 | [`v3.0.3`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.3) | [`efb3536`](https://github.com/softprops/action-gh-release/commit/efb35369e0ad2afab669f228072c1b0d510eae64) | [`HARDENING.md`](https://github.com/chainguard-actions/softprops-action-gh-release/blob/v3.0.3/HARDENING.md) |
+| v3.0.4 | [`v3.0.4`](https://github.com/chainguard-actions/softprops-action-gh-release/tree/v3.0.4) | [`8a0cd65`](https://github.com/softprops/action-gh-release/commit/8a0cd651e5b2365bd640854a3fa5dfc70e4875f3) | [`HARDENING.md`](https://github.com/chainguard-actions/softprops-action-gh-release/blob/v3.0.4/HARDENING.md) |
 
 ## Privacy
 
